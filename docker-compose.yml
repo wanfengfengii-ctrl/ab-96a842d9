@@ -1,0 +1,55 @@
+services:
+  api:
+    build:
+      context: ./api
+    environment:
+      API_PORT: "8000"
+    ports:
+      # 宿主机端口可通过 .env / 环境变量 API_PORT 配置
+      - "${API_HOST_PORT:-8000}:8000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health',timeout=2).status==200 else 1)",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./web
+    ports:
+      # 宿主机端口可通过 .env / 环境变量 WEB_HOST_PORT 配置
+      - "${WEB_HOST_PORT:-8080}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+
+  # 可执行验收服务：
+  #   docker compose build verify && docker compose run --rm verify
+  # 等待 web/api 健康后对真实 HTTP 服务做端到端验收。
+  verify:
+    build:
+      context: ./verify
+    environment:
+      API_BASE: "http://api:8000"
+      WEB_BASE: "http://web:80"
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    restart: "no"

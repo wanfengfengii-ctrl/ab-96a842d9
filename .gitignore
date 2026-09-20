@@ -2,3 +2,8 @@
 .env
 node_modules/
 __pycache__/
+.venv/
+.npm-cache/
+web/dist/
+*.tsbuildinfo
+*.pyc
