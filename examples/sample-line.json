@@ -1,0 +1,30 @@
+{
+  "stations": [
+    {
+      "increment": 6,
+      "lower": 0,
+      "upper": 8,
+      "boxes": [
+        { "id": 1, "correction": -3, "loss": 0.5 }
+      ]
+    },
+    {
+      "increment": 5,
+      "lower": 0,
+      "upper": 6,
+      "boxes": [
+        { "id": 1, "correction": -4, "loss": 0.2 },
+        { "id": 2, "correction": -8, "loss": 0.9 }
+      ]
+    },
+    {
+      "increment": 7,
+      "lower": 0,
+      "upper": 5,
+      "boxes": [
+        { "id": 1, "correction": -6, "loss": 0.3 },
+        { "id": 2, "correction": -9, "loss": 1.1 }
+      ]
+    }
+  ]
+}

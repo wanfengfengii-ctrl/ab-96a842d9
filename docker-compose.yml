@@ -1,0 +1,45 @@
+services:
+  api:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      PYTHONUNBUFFERED: "1"
+    ports:
+      # Host port configurable via API_PORT (default 8000).
+      - "${API_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2).status==200 else 1)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  web:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      # Host port configurable via WEB_PORT (default 8080).
+      - "${WEB_PORT:-8080}:80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  # Acceptance service: run on demand with
+  #   docker compose run --rm verify
+  # It exercises the real running API over the compose network.
+  verify:
+    build:
+      context: ./backend
+    entrypoint: ["python", "/srv/acceptance/verify.py", "http://api:8000"]
+    depends_on:
+      api:
+        condition: service_healthy
+    profiles: ["verify"]

@@ -1,0 +1,20 @@
+{
+  "_comment": "并列最优示例：第 2 站必须装盒，盒 #1 与 #2 修正量/插损完全相同，构成两份并列见证。",
+  "stations": [
+    {
+      "increment": 5,
+      "lower": 0,
+      "upper": 9,
+      "boxes": []
+    },
+    {
+      "increment": 0,
+      "lower": 0,
+      "upper": 3,
+      "boxes": [
+        { "id": 1, "correction": -2, "loss": 0.1 },
+        { "id": 2, "correction": -2, "loss": 0.1 }
+      ]
+    }
+  ]
+}
